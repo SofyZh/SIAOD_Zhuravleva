@@ -1,0 +1,5 @@
+
+# Тест аргументов в кавычках
+ls -l "file with spaces.txt"
+cd "My Documents"
+pwd
