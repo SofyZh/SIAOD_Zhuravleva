@@ -10,7 +10,7 @@ class VFS:
 
         if not path_vfs:
             self.path_vfs = os.getcwd()
-            raise Exception(f"Не указан путь vfs")
+            raise Exception(f"Не указан путь vfs.")
         else: self.path_vfs = path_vfs
         self.start_script = start_script
         self.current_directory = "/home/user"
