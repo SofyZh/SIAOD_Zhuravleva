@@ -8,7 +8,7 @@ class VFS:
         self.root = root
         self.root.title(path_vfs)
 
-        if not path_vfs:
+        if path_vfs == "error":
             self.path_vfs = os.getcwd()
             raise Exception(f"Не указан путь vfs.")
         else: self.path_vfs = path_vfs
@@ -173,7 +173,7 @@ class VFS:
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='VFS Emulator')
-    parser.add_argument('--vfs-path', '-v', help='Путь к физическому расположению VFS')
+    parser.add_argument('--vfs-path', '-v', help='Путь к физическому расположению VFS', default=os.getcwd())
     parser.add_argument('--script', '-s', help='Путь к стартовому скрипту')
 
     return parser.parse_args()
@@ -223,7 +223,8 @@ def main():
     args = parse_arguments()
     #create_test_scripts()
     root = tk.Tk()
-    VFS(root, path_vfs=args.vfs_path, start_script=args.script)
+    if args: VFS(root, path_vfs=args.vfs_path, start_script=args.script)
+    else: VFS(root)
     root.mainloop()
 
 
