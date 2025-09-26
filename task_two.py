@@ -6,9 +6,12 @@ import re, sys, os, subprocess, time, argparse
 class VFS:
     def __init__(self, root, path_vfs=None, start_script=None):
         self.root = root
-        self.root.title("VFS")
+        self.root.title(path_vfs)
 
-        self.path_vfs = path_vfs or os.getcwd()
+        if not path_vfs:
+            self.path_vfs = os.getcwd()
+            raise Exception(f"Не указан путь vfs")
+        else: self.path_vfs = path_vfs
         self.start_script = start_script
         self.current_directory = "/home/user"
         self.script_mode = False
@@ -154,7 +157,7 @@ class VFS:
 
             self.output_area.insert(tk.END, f"Текущий каталог изменен на: {self.current_directory}\n")
 
-        else: raise Exception("Hе указан аргумент для команды cd")
+        else: self.current_directory = "/home"
 
     def cmd_pwd(self):
         self.output_area.insert(tk.END, f"{self.current_directory}\n")
@@ -167,51 +170,60 @@ class VFS:
         self.output_area.insert(tk.END, "  exit                    - выход из системы\n")
         self.output_area.insert(tk.END, "  help                   - показать эту справку\n")
 
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description='VFS Emulator')
+    parser.add_argument('--vfs-path', '-v', help='Путь к физическому расположению VFS')
+    parser.add_argument('--script', '-s', help='Путь к стартовому скрипту')
+
+    return parser.parse_args()
+
 #-------------------------------------------------
 
-def create_test_scripts():
-    scripts_dir = "test_scripts"
-    os.makedirs(scripts_dir, exist_ok=True)
-
-    # скрипт 1: базовые команды
-    script1 = os.path.join(scripts_dir, "test_basic.vfs")
-    with open(script1, 'w', encoding='utf-8') as f:
-        f.write("""
-# Базовый тестовый скрипт
-pwd
-ls -l
-cd /home
-pwd
-ls
-""")
-
-    # скрипт 2: тест скрипта с ошибкой
-    script2 = os.path.join(scripts_dir, "test_error.vfs")
-    with open(script2, 'w', encoding='utf-8') as f:
-        f.write("""
-# Скрипт с ошибкой
-pwd
-unknown_command  # Эта команда вызовет ошибку
-pwd "Эта строка не будет выполнена"
-""")
-
-    # скрипт 3: тест кавычек
-    script3 = os.path.join(scripts_dir, "test_quotes.vfs")
-    with open(script3, 'w', encoding='utf-8') as f:
-        f.write("""
-# Тест аргументов в кавычках
-ls -l "file with spaces.txt"
-cd "My Documents"
-pwd
-""")
+# def create_test_scripts():
+#     scripts_dir = "test_scripts"
+#     os.makedirs(scripts_dir, exist_ok=True)
+#
+#     # скрипт 1: базовые команды
+#     script1 = os.path.join(scripts_dir, "test_basic.vfs")
+#     with open(script1, 'w', encoding='utf-8') as f:
+#         f.write("""
+# # Базовый тестовый скрипт
+# pwd
+# ls -l
+# cd /home
+# pwd
+# ls
+# """)
+#
+#     # скрипт 2: тест скрипта с ошибкой
+#     script2 = os.path.join(scripts_dir, "test_error.vfs")
+#     with open(script2, 'w', encoding='utf-8') as f:
+#         f.write("""
+# # Скрипт с ошибкой
+# pwd
+# unknown_command  # Эта команда вызовет ошибку
+# pwd "Эта строка не будет выполнена"
+# """)
+#
+#     # скрипт 3: тест кавычек
+#     script3 = os.path.join(scripts_dir, "test_quotes.vfs")
+#     with open(script3, 'w', encoding='utf-8') as f:
+#         f.write("""
+# # Тест аргументов в кавычках
+# ls -l "file with spaces.txt"
+# cd "My Documents"
+# pwd
+# """)
 
 #-----------------------------------------------
 
 
 def main():
+    args = parse_arguments()
     #create_test_scripts()
     root = tk.Tk()
-    VFS(root, os.getcwd(), "test_scripts/test_basic.vfs")
+    VFS(root, path_vfs=args.vfs_path, start_script=args.script)
     root.mainloop()
 
 
